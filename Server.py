@@ -10,20 +10,16 @@ if "-iot" not in sys.argv:
 	print()
 	sys.exit(0);
     
-timeoffset = 0
-# Initialize Database and judge Constants
+# Initialize Var
 HOST, PORT = "192.168.1.37", 8723
-#timeoffset = 19800
+
 
 
 def LedOnfunc(led,Actions):
     
 		# Connect to Database
-		print("language:",lang)
-		print("code:",code)
-		print("input:",runid)
-		print("TimeLimit:",timelimit)
-		print("runjudge called ...")
+		print("LED:",led)
+		print("ACTION:",Actions)
 		
 	
 
