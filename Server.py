@@ -1,29 +1,37 @@
-
 import platform,re, os, shutil, signal, sys, _thread as thread, time, urllib, socketserver as SocketServer
-import requests
 
-if "-iot" not in sys.argv:
-	print("\nIOT : Execution Protocol (Linux Version 1.0)");
-	print("\nCommand Line Options :")
-	print("    -iot    : Connect to the server and start IOT Actions.")
-	#print("    -cache    : Use IO Files in Current Directory instead of downloading them.")
-	print()
-	sys.exit(0);
-    
-timeoffset = 0
-# Initialize Database and judge Constants
-HOST, PORT = "192.168.1.37", 8723
-#timeoffset = 19800
+import requests
+import RPi.GPIO as GPIO
+import time
+
+LedPin = 11    # pin11
+
+GPIO.setmode(GPIO.BOARD)       # Numbers GPIOs by physical location
+GPIO.setup(LedPin, GPIO.OUT)   # Set LedPin's mode is output
+#GPIO.output(LedPin, GPIO.HIGH) # Set LedPin high(+3.3V) to turn on led
+
+# Initialize Var
+HOST, PORT = "192.168.1.5", 8723
+
 
 
 def LedOnfunc(led,Actions):
     
-		# Connect to Database
-		print("language:",lang)
-		print("code:",code)
-		print("input:",runid)
-		print("TimeLimit:",timelimit)
-		print("runjudge called ...")
+    # Connect to Database
+    print("LED:",led)
+    print("ACTION:",Actions)
+    #while True:
+    if Actions==1:
+        GPIO.output(LedPin, GPIO.HIGH)  # led on
+    #time.sleep(1)
+    if Actions==0:
+        GPIO.output(LedPin, GPIO.LOW) # led off
+    #time.sleep(1)
+        
+def destroy():
+    
+    GPIO.output(LedPin, GPIO.LOW)   # led off
+    GPIO.cleanup()                  # Release resource
 		
 	
 
@@ -43,8 +51,8 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
 		#tempstr=self.data
 		#print(tempstr)
 		list1=tempstr.split('~')
-		#print(list1)
-		LedOnfunc(int(list1[0]),int(list1[1]))
+		print(list1)
+		LedOnfunc(list1[0],int(list1[1]))
 		#self.wfile.write(bytes(finaloutput,'UTF-8'))
 		#print("output successfully wrote on clinet")
 		#Likewise, self.wfile is a file-like object used to write back
@@ -64,6 +72,7 @@ if __name__ == "__main__":
 		server.serve_forever()
 	except KeyboardInterrupt as e:
 		print(" Keyboard Interrupt Detected.\n")
+                #destroy()
 	except Exception as e:
 		print("Exception : "+str(e)+"\n")
 	# Release lock
