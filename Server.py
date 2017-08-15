@@ -1,6 +1,15 @@
 
 import platform,re, os, shutil, signal, sys, _thread as thread, time, urllib, socketserver as SocketServer
+
 import requests
+import RPi.GPIO as GPIO
+import time
+
+LedPin = 11    # pin11
+
+GPIO.setmode(GPIO.BOARD)       # Numbers GPIOs by physical location
+GPIO.setup(LedPin, GPIO.OUT)   # Set LedPin's mode is output
+GPIO.output(LedPin, GPIO.HIGH) # Set LedPin high(+3.3V) to turn on led
 
 if "-iot" not in sys.argv:
 	print("\nIOT : Execution Protocol (Linux Version 1.0)");
@@ -11,7 +20,7 @@ if "-iot" not in sys.argv:
 	sys.exit(0);
     
 # Initialize Var
-HOST, PORT = "192.168.1.37", 8723
+HOST, PORT = "192.168.1.5", 8723
 
 
 
@@ -20,6 +29,15 @@ def LedOnfunc(led,Actions):
 		# Connect to Database
 		print("LED:",led)
 		print("ACTION:",Actions)
+        while True:
+        GPIO.output(LedPin, GPIO.HIGH)  # led on
+        time.sleep(1)
+        GPIO.output(LedPin, GPIO.LOW) # led off
+        time.sleep(1)
+        
+def destroy():
+  GPIO.output(LedPin, GPIO.LOW)   # led off
+  GPIO.cleanup()                  # Release resource
 		
 	
 
@@ -60,6 +78,7 @@ if __name__ == "__main__":
 		server.serve_forever()
 	except KeyboardInterrupt as e:
 		print(" Keyboard Interrupt Detected.\n")
+        destroy()
 	except Exception as e:
 		print("Exception : "+str(e)+"\n")
 	# Release lock
